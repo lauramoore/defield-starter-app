@@ -1,6 +1,7 @@
 <template>
   <div class="hello">
     <h1>{{ msg }}</h1>
+     <AuthWidget />
     <p>
       For a guide and recipes on how to configure / customize this project,<br>
       check out the
@@ -31,12 +32,18 @@
 </template>
 
 <script>
+import AuthWidget from './Auth.vue';
+
 export default {
   name: 'HelloWorld',
+  components: {
+    AuthWidget
+  },
   props: {
     msg: String
   }
 }
+
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
