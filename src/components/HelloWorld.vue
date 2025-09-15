@@ -1,7 +1,10 @@
 <template>
   <div class="hello">
     <h1>{{ msg }}</h1>
-     <AuthWidget />
+    <div v-if="isAuthenticated">
+      Hello: {{ user.name }}
+    </div>
+    <AuthWidget v-else />
     <p>
       For a guide and recipes on how to configure / customize this project,<br>
       check out the
@@ -33,6 +36,17 @@
 
 <script>
 import AuthWidget from './Auth.vue';
+import { ref, onMounted } from 'vue';
+import { getAuth, onAuthStateChanged } from 'firebase/auth';
+
+const isAuthenticated = ref(false);
+onMounted(() => {
+  const auth = getAuth();
+  onAuthStateChanged(auth, (user) => {
+    // Update the value based on the user's login status
+    isAuthenticated.value = !!user;
+  });
+});
 
 export default {
   name: 'HelloWorld',
