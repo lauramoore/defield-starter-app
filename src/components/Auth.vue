@@ -3,22 +3,26 @@
 </template>
 
 <script setup>
-import { onMounted, defineComponent, getCurrentInstance } from 'vue';
+import { onMounted, inject } from 'vue';
 import * as firebaseui from 'firebaseui';
-import {GoogleAuthProvider, EmailAuthProvider} from 'firebase/auth';
+import { GoogleAuthProvider, EmailAuthProvider } from 'firebase/auth';
 import 'firebaseui/dist/firebaseui.css';
 
+// Inject the firebaseAuth instance from app config or provide/inject
+const firebaseAuth = inject('$auth');
+
 onMounted(() => {
-  const instance = getCurrentInstance();
-  const firebaseAuth = instance?.appContext.config.globalProperties.$firebaseAuth;
+  if (!firebaseAuth) {
+    console.error('firebaseAuth instance not found. Make sure it is provided.');
+    return;
+  }
   const ui = new firebaseui.auth.AuthUI(firebaseAuth);
   const uiConfig = {
-    signInSuccessUrl: '/', // URL to redirect to after a successful sign-in
+    signInSuccessUrl: '/',
     signInOptions: [
       {
         provider: GoogleAuthProvider.PROVIDER_ID,
         providerName: 'Google',
-        // For emulator, disable One Tap and set custom parameters if needed
         customParameters: {
           // Example: prompt: 'select_account'
         }
@@ -26,20 +30,13 @@ onMounted(() => {
       {
         provider: EmailAuthProvider.PROVIDER_ID,
         providerName: 'Email',
-        // For emulator, you may want to enable email link sign-in for testing
         signInMethod: 'password'
       }
     ],
-    credentialHelper: firebaseui.auth.CredentialHelper.NONE, // Avoids popup issues with emulators
-    // Optionally, you can set tosUrl and privacyPolicyUrl to localhost/test URLs for emulator
+    credentialHelper: firebaseui.auth.CredentialHelper.NONE,
+    // tosUrl: 'http://localhost/test-tos',
+    // privacyPolicyUrl: 'http://localhost/test-privacy',
   };
-  // The start method will wait for the DOM to be loaded
   ui.start('#firebaseui-auth-container', uiConfig);
-});
-</script>
-
-<script>
-export default defineComponent({
-  name: 'AuthWidget'
 });
 </script>
